@@ -10,7 +10,7 @@ layout: default
     <span>›</span>
     <a href="/region/{{ page.region_slug }}/">{{ page.region }}</a>
     <span>›</span>
-    <span>{{ page.name }}</span>
+    <span>{{ page.market_name }}</span>
   </nav>
 
   <!-- 시장 헤더 -->
@@ -22,7 +22,7 @@ layout: default
         {% assign today_day = 'js' %}
         <span class="badge badge-today" id="todayBadge" style="display:none">🎉 오늘 장날!</span>
       </div>
-      <h1 class="market-name">{{ page.name }}</h1>
+      <h1 class="market-name">{{ page.market_name }}</h1>
     </div>
 
     <div class="market-days-banner">
@@ -59,10 +59,7 @@ layout: default
   </div>
 
   <!-- 광고 -->
-  <div class="ad-slot">
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6464921081676309" data-ad-slot="7080296704" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  <div class="ad-slot">{% include ad.html %}</div>
 
   <!-- 시장 소개 -->
   {% if page.description_text and page.description_text != "" %}
@@ -91,7 +88,7 @@ layout: default
   <!-- 같은 지역 다른 장 -->
   {% if page.same_region and page.same_region.size > 0 %}
   <div class="market-section">
-    <h2>🗺️ {{ page.region }} 다른 오일장</h2>
+    <h2>🗺️ {{ page.region }} 다른 5일장</h2>
     <div class="related-grid">
       {% for m in page.same_region %}
       <a href="/market/{{ m.id }}/" class="related-card">
@@ -100,14 +97,14 @@ layout: default
       </a>
       {% endfor %}
     </div>
-    <a href="/region/{{ page.region_slug }}/" class="view-all-link">{{ page.region }} 전체 오일장 보기 →</a>
+    <a href="/region/{{ page.region_slug }}/" class="view-all-link">{{ page.region }} 전체 5일장 보기 →</a>
   </div>
   {% endif %}
 
   <!-- 같은 날 열리는 다른 장 -->
   {% if page.same_days and page.same_days.size > 0 %}
   <div class="market-section">
-    <h2>🔁 같은 날({{ page.days_key }}일장) 전국 오일장</h2>
+    <h2>🔁 같은 날({{ page.days_key }}일장) 전국 5일장</h2>
     <div class="related-grid">
       {% for m in page.same_days %}
       <a href="/market/{{ m.id }}/" class="related-card">
@@ -133,7 +130,7 @@ layout: default
       "streetAddress": "{{ page.address | escape }}"
     }{% if page.phone and page.phone != "" %},
     "telephone": "{{ page.phone }}"{% endif %}{% if page.specialties and page.specialties.size > 0 %},
-    "description": "{{ page.name }} - 특산물: {{ page.specialties | join: ', ' | escape }}"{% endif %}
+    "description": "{{ page.market_name }} - 특산물: {{ page.specialties | join: ', ' | escape }}"{% endif %}
   }
   </script>
 

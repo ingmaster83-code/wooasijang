@@ -7,19 +7,16 @@ layout: default
   <nav class="breadcrumb">
     <a href="/">홈</a>
     <span>›</span>
-    <span>{{ page.region }} 오일장</span>
+    <span>{{ page.region }} 5일장</span>
   </nav>
 
   <div class="list-header">
-    <h1>🗺️ {{ page.region }} 오일장</h1>
+    <h1>🗺️ {{ page.region }} 5일장</h1>
     <p class="list-count">총 {{ page.markets | size }}개 전통시장</p>
   </div>
 
   <!-- 광고 -->
-  <div class="ad-slot">
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6464921081676309" data-ad-slot="7080296704" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  <div class="ad-slot">{% include ad.html %}</div>
 
   <div class="today-highlight" id="todaySection" style="display:none">
     <h2>🎉 오늘 열리는 장</h2>
@@ -56,7 +53,7 @@ layout: default
   </div>
 
   <div class="region-nav">
-    <h3>다른 지역 오일장</h3>
+    <h3>다른 지역 5일장</h3>
     <div class="region-btn-grid">
       {% assign all_regions = site.data.markets | map: 'region' | uniq | sort %}
       {% for r in all_regions %}

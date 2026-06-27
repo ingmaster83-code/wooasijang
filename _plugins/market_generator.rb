@@ -82,16 +82,20 @@ module Jekyll
 
       self.process(@name)
       self.read_yaml(File.join(@base, '_layouts'), 'market.html')
-      self.data.merge!(market)
+      market_data = market.dup
+      market_data['market_name'] = market_data.delete('name')
+      self.data.merge!(market_data)
       self.data['layout']        = 'market'
       self.data['same_region']   = same_region
       self.data['same_days']     = same_days
       self.data['days_key']      = market['days'].sort.join('-')
       self.data['days_display']  = days_full_label(market['days'])
       self.data['region_slug']   = REGION_SLUGS[market['region']] || market['region']
-      self.data['title']         = "#{market['name']} 장날 특산물 오시는길 | 우아시장"
+      days_label = days_full_label(market['days'])
+      specialties_str = (market['specialties'] || []).join(', ')
+      self.data['title']         = "#{market['name']} 장날 #{days_label} | #{market['region']} #{market['city']} 5일장"
       self.data['description']   = market['seo_description'] ||
-        "#{market['name']}(#{market['region']} #{market['city']}) 장날 #{days_full_label(market['days'])}, 특산물, 찾아가는 길 안내."
+        "#{market['name']}(#{market['region']} #{market['city']}) 매월 #{days_label}에 열리는 전통 5일장. 특산물: #{specialties_str}."
     end
 
     private
@@ -121,8 +125,9 @@ module Jekyll
       self.data['region']      = region
       self.data['region_slug'] = slug
       self.data['markets']     = markets
-      self.data['title']       = "#{region} 오일장 목록 | 우아시장"
-      self.data['description'] = "#{region}의 전통 5일장(오일장) #{markets.size}개 목록. 장날과 특산물 정보를 확인하세요."
+      cities = markets.map { |m| m['city'] }.uniq.first(4).join(', ')
+      self.data['title']       = "#{region} 5일장 장날 정보 | 전통시장 #{markets.size}개 목록"
+      self.data['description'] = "#{region} 전통 5일장 #{markets.size}개 목록. #{cities} 등 장날·특산물 정보를 한눈에 확인하세요."
     end
   end
 
@@ -143,8 +148,11 @@ module Jekyll
       self.data['days_key']   = days_key
       self.data['days_label'] = label
       self.data['markets']    = markets
-      self.data['title']      = "#{label} 전국 오일장 목록 | 우아시장"
-      self.data['description'] = "전국 #{label}이 열리는 전통시장 #{markets.size}개 목록과 장날 정보."
+      all_dates = days.flat_map { |d| [d, d+5, d+10, d+15, d+20, d+25].select { |x| x <= 30 } }.sort
+      dates_str = all_dates.join('일, ') + "일"
+      regions_str = markets.map { |m| m['region'] }.uniq.first(4).join(', ')
+      self.data['title']       = "#{label} 전국 5일장 장날 목록 | 매월 #{dates_str}"
+      self.data['description'] = "전국 #{label} 전통시장 #{markets.size}개 목록. 매월 #{dates_str}에 열립니다. #{regions_str} 등 지역별 장날 정보."
     end
   end
 
