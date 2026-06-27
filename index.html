@@ -1,0 +1,182 @@
+---
+layout: default
+title: 우아시장 - 전국 오일장 장날 한눈에
+description: 전국 5일장(오일장) 장날 정보를 한눈에 확인하세요. 오늘 열리는 장, 지역별·날짜별 전통시장과 특산물 안내.
+---
+
+<div class="home-page">
+
+  <div class="home-hero">
+    <h1>🏪 전국 오일장 장날 한눈에</h1>
+    <p>전국 {{ site.data.markets | size }}개 전통 5일장 장날·특산물 정보</p>
+  </div>
+
+  <!-- 검색 -->
+  <div class="search-wrap">
+    <div class="search-box-wrap">
+      <input type="text" id="searchBox" class="search-box" placeholder="시장명, 지역, 특산물 검색...">
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- 오늘/내일 장날 -->
+  <div class="today-section">
+    <h2>📅 오늘 열리는 장 <span id="todayDateLabel" style="font-size:.85rem;font-weight:400;color:#92400E;"></span></h2>
+    <div class="today-cards" id="todayCards">
+      <span class="no-market">불러오는 중...</span>
+    </div>
+  </div>
+
+  <!-- 광고 -->
+  <div style="margin-bottom:32px;">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6464921081676309" data-ad-slot="7080296704" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- 지역별 찾기 -->
+  <div class="home-section">
+    <h2>🗺️ 지역별로 찾기</h2>
+    <div class="region-btn-grid">
+      {% assign regions_data = site.data.markets | group_by: 'region' | sort: 'name' %}
+      {% for rg in regions_data %}
+      {% assign slug = site.data.region_slugs[rg.name] %}
+      <a href="/region/{{ slug }}/" class="region-btn">
+        {{ rg.name }}
+        <span class="count">{{ rg.items | size }}개</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 장날별 찾기 -->
+  <div class="home-section">
+    <h2>📆 장날별로 찾기</h2>
+    <div class="days-btn-grid" id="daysBtns">
+      {% assign days_order = "1-6,2-7,3-8,4-9,5-10" | split: ',' %}
+      {% for dk in days_order %}
+      {% assign dk_markets = site.data.markets | where_exp: "m", "m.days contains dk" %}
+      <a href="/days/{{ dk }}/" class="days-btn" data-days="{{ dk }}">
+        {{ dk | replace: '-', '·' }}일장
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 유명 시장 Top 20 -->
+  <div class="home-section">
+    <h2>⭐ 주목할 만한 전통시장</h2>
+    <div class="top-market-grid">
+      {% assign featured = "gangwon-003,gangwon-006,gyeongbuk-001,gyeongbuk-012,jeonnam-001,jeonnam-002,jeonnam-004,jeonnam-005,jeonnam-010,chungnam-002,chungnam-007,gyeonggi-016,gyeongnam-002,gyeongnam-008,gyeongnam-009,jeonbuk-002,jeonbuk-006,gyeongbuk-011,gangwon-009,jeju-001" | split: ',' %}
+      {% for fid in featured %}
+      {% assign m = site.data.markets | where: 'id', fid | first %}
+      {% if m %}
+      <a href="/market/{{ m.id }}/" class="top-market-card">
+        <div class="top-card-name">{{ m.name }}</div>
+        <div class="top-card-region">{{ m.region }} · {{ m.city }}</div>
+        <div class="top-card-specialties">🛒 {{ m.specialties | join: ' · ' }}</div>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 이용 안내 -->
+  <div class="guide-section">
+    <h2>ℹ️ 이용 안내</h2>
+    <ul class="guide-list">
+      <li>📅 오일장은 장날 숫자로 끝나는 날마다 열립니다 (예: 2·7일장 → 매월 2, 7, 12, 17, 22, 27일)</li>
+      <li>🕒 장날 시작 시간은 시장마다 다르며 보통 오전부터 오후까지 운영합니다</li>
+      <li>☔ 기상 상황에 따라 임시 휴장이 있을 수 있으니 방문 전 확인하세요</li>
+      <li>⚠️ 본 장날 정보는 변경될 수 있습니다. 방문 전 해당 시장에 직접 문의하세요.</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Fuse.js 검색 -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7/dist/fuse.min.js"></script>
+<script>
+(async function() {
+  // 오늘 장날 계산
+  const now = new Date();
+  const today = now.getDate();
+  const month = now.getMonth() + 1;
+  const daysInMonth = new Date(now.getFullYear(), month, 0).getDate();
+
+  document.getElementById('todayDateLabel').textContent =
+    `(${month}월 ${today}일)`;
+
+  // 장날별 버튼 오늘 하이라이트
+  document.querySelectorAll('.days-btn[data-days]').forEach(btn => {
+    const days = btn.dataset.days.split('-').map(Number);
+    const isToday = days.some(d => {
+      let x = d;
+      while (x <= daysInMonth) { if (x === today) return true; x += 10; }
+      return false;
+    });
+    if (isToday) btn.classList.add('active-today');
+  });
+
+  // search_index 로드
+  let markets = [];
+  try {
+    const res = await fetch('/search_index.json');
+    markets = await res.json();
+  } catch(e) { return; }
+
+  // 오늘 열리는 장
+  const todayMarkets = markets.filter(m =>
+    m.days.some(d => {
+      let x = d;
+      while (x <= daysInMonth) { if (x === today) return true; x += 10; }
+      return false;
+    })
+  );
+
+  const todayEl = document.getElementById('todayCards');
+  if (todayMarkets.length > 0) {
+    todayEl.innerHTML = todayMarkets.map(m =>
+      `<a href="/market/${m.id}/" class="today-card">
+        ${m.name}
+        <span>${m.region} ${m.city}</span>
+      </a>`
+    ).join('');
+  } else {
+    todayEl.innerHTML = '<span class="no-market">오늘은 열리는 장이 없습니다.</span>';
+  }
+
+  // 검색
+  const fuse = new Fuse(markets, {
+    keys: ['name', 'region', 'city', 'specialties'],
+    threshold: 0.35,
+    minMatchCharLength: 1,
+  });
+
+  const searchBox = document.getElementById('searchBox');
+  const searchResults = document.getElementById('searchResults');
+
+  searchBox.addEventListener('input', function() {
+    const q = this.value.trim();
+    if (!q) { searchResults.classList.remove('active'); return; }
+    const results = fuse.search(q).slice(0, 12);
+    if (results.length === 0) {
+      searchResults.innerHTML = '<div style="padding:12px 16px;color:#6B7280;">검색 결과가 없습니다.</div>';
+    } else {
+      searchResults.innerHTML = results.map(r => {
+        const m = r.item;
+        return `<a href="/market/${m.id}/" class="search-result-item">
+          <span class="search-result-name">${m.name}</span>
+          <span class="search-result-meta">${m.region} · ${(m.specialties||[]).slice(0,2).join('·')}</span>
+        </a>`;
+      }).join('');
+    }
+    searchResults.classList.add('active');
+  });
+
+  document.addEventListener('click', e => {
+    if (!searchBox.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.remove('active');
+    }
+  });
+})();
+</script>

@@ -1,0 +1,91 @@
+---
+layout: default
+---
+
+<div class="list-page">
+
+  <nav class="breadcrumb">
+    <a href="/">홈</a>
+    <span>›</span>
+    <span>{{ page.days_label }}</span>
+  </nav>
+
+  <div class="list-header">
+    <h1>📅 {{ page.days_label }} 전국 오일장</h1>
+    <p class="list-count">전국 {{ page.markets | size }}개 시장</p>
+    <p class="days-explain" id="daysExplain"></p>
+  </div>
+
+  <!-- 광고 -->
+  <div class="ad-slot">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6464921081676309" data-ad-slot="7080296704" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <div class="today-highlight" id="todaySection" style="display:none">
+    <h2>🎉 오늘 장날!</h2>
+    <p>오늘(<span id="todayDate"></span>)은 {{ page.days_label }}이 열리는 날입니다.</p>
+  </div>
+
+  {% assign by_region = page.markets | group_by: 'region' | sort: 'name' %}
+  {% for group in by_region %}
+  {% assign r_slug = site.data.region_slugs[group.name] %}
+  <div class="region-section">
+    <h2 class="region-section-title">
+      <a href="/region/{{ r_slug }}/">{{ group.name }}</a>
+      <span class="group-count">{{ group.items | size }}개</span>
+    </h2>
+    <div class="market-cards">
+      {% for market in group.items %}
+      <a href="/market/{{ market.id }}/" class="market-card">
+        <div class="card-name">{{ market.name }}</div>
+        <div class="card-city">{{ market.city }}</div>
+        <div class="card-specialties">
+          {% for sp in market.specialties limit:3 %}
+          <span class="sp-tag">{{ sp }}</span>
+          {% endfor %}
+        </div>
+        {% if market.address and market.address != "" %}
+        <div class="card-address">📍 {{ market.address }}</div>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="days-nav">
+    <h3>다른 날짜 오일장</h3>
+    <div class="days-btn-grid">
+      {% assign all_days = "1-6,2-7,3-8,4-9,5-10" | split: ',' %}
+      {% for dk in all_days %}
+      {% if dk != page.days_key %}
+      <a href="/days/{{ dk }}/" class="days-btn-sm">{{ dk | replace: '-', '·' }}일장</a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const daysKey = '{{ page.days_key }}';
+  const days = daysKey.split('-').map(Number);
+  const today = new Date().getDate();
+  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+
+  const allDates = [];
+  days.forEach(d => { let x = d; while (x <= daysInMonth) { allDates.push(x); x += 10; } });
+  allDates.sort((a, b) => a - b);
+
+  const now = new Date();
+  document.getElementById('daysExplain').textContent =
+    `이번달(${now.getMonth()+1}월) 장날: ${allDates.join('·')}일`;
+
+  if (allDates.includes(today)) {
+    document.getElementById('todaySection').style.display = 'block';
+    document.getElementById('todayDate').textContent = `${now.getMonth()+1}월 ${today}일`;
+  }
+})();
+</script>

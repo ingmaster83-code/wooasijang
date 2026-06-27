@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wooasijang.wooahouse.com/sitemap.xml
