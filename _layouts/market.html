@@ -40,7 +40,7 @@ layout: default
         <span>{{ page.address }}</span>
       </div>
       <div class="info-item">
-        <a href="https://wooaparking.wooahouse.com/?q={{ page.address | url_encode }}" target="_blank" rel="noopener" class="parking-btn">🅿️ 근처 공영주차장 확인하기</a>
+        <a href="https://wooaparking.wooahouse.com/?q={{ page.address | url_encode }}" class="parking-btn">🅿️ 근처 공영주차장 확인하기</a>
       </div>
       {% endif %}
       {% if page.phone and page.phone != "" %}
