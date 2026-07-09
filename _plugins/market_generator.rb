@@ -92,10 +92,12 @@ module Jekyll
       self.data['days_display']  = days_full_label(market['days'])
       self.data['region_slug']   = REGION_SLUGS[market['region']] || market['region']
       days_label = days_full_label(market['days'])
+      short_days = market['days'].sort.join('·') + "일"
       specialties_str = (market['specialties'] || []).join(', ')
-      self.data['title']         = "#{market['name']} 장날 #{days_label} | #{market['region']} #{market['city']} 5일장"
-      self.data['description']   = market['seo_description'] ||
+      self.data['title']         = "#{market['name']} 장날 날짜 (매월 #{short_days}) | #{market['region']} #{market['city']} 5일장"
+      base_description = market['seo_description'] ||
         "#{market['name']}(#{market['region']} #{market['city']}) 매월 #{days_label}에 열리는 전통 5일장. 특산물: #{specialties_str}."
+      self.data['description']   = "#{market['name']} 장날 날짜: 매월 #{short_days}. #{base_description}"
     end
 
     private
@@ -126,8 +128,9 @@ module Jekyll
       self.data['region_slug'] = slug
       self.data['markets']     = markets
       cities = markets.map { |m| m['city'] }.uniq.first(4).join(', ')
-      self.data['title']       = "#{region} 5일장 장날 정보 | 전통시장 #{markets.size}개 목록"
-      self.data['description'] = "#{region} 전통 5일장 #{markets.size}개 목록. #{cities} 등 장날·특산물 정보를 한눈에 확인하세요."
+      days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
+      self.data['title']       = "#{region} 장날 날짜 | 5일장·오일장 전통시장 #{markets.size}개 목록"
+      self.data['description'] = "#{region} 5일장 날짜: #{days_groups} 등. #{cities} 등 전통시장 #{markets.size}개의 장날·특산물 정보를 한눈에 확인하세요."
     end
   end
 
