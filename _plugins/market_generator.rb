@@ -129,8 +129,8 @@ module Jekyll
       self.data['markets']     = markets
       cities = markets.map { |m| m['city'] }.uniq.first(4).join(', ')
       days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
-      self.data['title']       = "#{region} 장날 날짜 | 5일장·오일장 전통시장 #{markets.size}개 목록"
-      self.data['description'] = "#{region} 5일장 날짜: #{days_groups} 등. #{cities} 등 전통시장 #{markets.size}개의 장날·특산물 정보를 한눈에 확인하세요."
+      self.data['title']       = "#{region} 오일장 날짜 총정리 | 5일장 전통시장 #{markets.size}곳"
+      self.data['description'] = "#{region} 전통시장 #{markets.size}곳 오일장 날짜 총정리! #{days_groups} 등 매월 장날 일정과 #{cities} 특산물 정보를 지역별로 한눈에 확인하세요."
     end
   end
 
