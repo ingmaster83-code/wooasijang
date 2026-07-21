@@ -151,7 +151,7 @@ module Jekyll
       self.data['days_key']   = days_key
       self.data['days_label'] = label
       self.data['markets']    = markets
-      all_dates = days.flat_map { |d| [d, d+5, d+10, d+15, d+20, d+25].select { |x| x <= 30 } }.sort
+      all_dates = days.flat_map { |d| [d, d+5, d+10, d+15, d+20, d+25].select { |x| x <= 30 } }.uniq.sort
       dates_str = all_dates.join('일, ') + "일"
       regions_str = markets.map { |m| m['region'] }.uniq.first(4).join(', ')
       self.data['title']       = "#{label} 전국 5일장 장날 목록 | 매월 #{dates_str}"
