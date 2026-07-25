@@ -7,3 +7,4 @@ Gemfile.lock
 *.py[cod]
 __pycache__/
 .env
+scripts/_traditional_market_raw.json
