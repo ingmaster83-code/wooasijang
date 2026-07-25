@@ -175,6 +175,12 @@ img { max-width: 100%; }
 .guide-list li { font-size: .9rem; color: var(--text-muted); padding-left: 4px; }
 
 /* ===== 시장 상세 페이지 ===== */
+.market-layout { max-width: 1300px; margin: 0 auto; display: flex; gap: 32px; align-items: flex-start; }
+.market-layout .market-page { max-width: 960px; margin: 0; flex: 1; min-width: 0; }
+.market-sidebar { width: 300px; flex-shrink: 0; position: sticky; top: 20px; padding-top: 16px; }
+@media (max-width: 1240px) {
+  .market-sidebar { display: none; }
+}
 .market-page { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
 
 .market-header {
