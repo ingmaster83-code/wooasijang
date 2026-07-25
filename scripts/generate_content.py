@@ -51,23 +51,30 @@ def generate_content(market: dict, api_key: str) -> dict:
         days=days_str,
         specialties=specialties,
     )
-    resp = requests.post(
-        "https://api.deepseek.com/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": "deepseek-chat",
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 400,
-            "temperature": 0.6,
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    raw = resp.json()["choices"][0]["message"]["content"].strip()
-    return parse_json_response(raw)
+    last_err = None
+    for attempt in range(3):
+        try:
+            resp = requests.post(
+                "https://api.deepseek.com/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "deepseek-v4-flash",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 1500,
+                    "temperature": 0.6,
+                },
+                timeout=45,
+            )
+            resp.raise_for_status()
+            raw = resp.json()["choices"][0]["message"]["content"].strip()
+            return parse_json_response(raw)
+        except Exception as e:
+            last_err = e
+            time.sleep(1.5)
+    raise last_err
 
 
 def main():

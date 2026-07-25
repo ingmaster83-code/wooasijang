@@ -60,6 +60,20 @@ layout: default
       {% endfor %}
     </div>
     {% endif %}
+
+    {% assign has_facility_info = false %}
+    {% if page.parking_available != nil or page.toilet_available != nil or page.store_count and page.store_count != "" or page.established_year and page.established_year != "" %}
+      {% assign has_facility_info = true %}
+    {% endif %}
+    {% if has_facility_info %}
+    <div class="market-facilities">
+      {% if page.parking_available == true %}<span class="facility-badge yes">🅿️ 시장 내 주차장 있음</span>{% endif %}
+      {% if page.parking_available == false %}<span class="facility-badge no">🅿️ 시장 내 주차장 없음</span>{% endif %}
+      {% if page.toilet_available == true %}<span class="facility-badge yes">🚻 공중화장실 있음</span>{% endif %}
+      {% if page.store_count and page.store_count != "" %}<span class="facility-badge">🏪 점포 {{ page.store_count }}개</span>{% endif %}
+      {% if page.established_year and page.established_year != "" %}<span class="facility-badge">📅 {{ page.established_year }}년 개설</span>{% endif %}
+    </div>
+    {% endif %}
   </div>
 
   <!-- 광고 -->

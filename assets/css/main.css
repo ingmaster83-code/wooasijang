@@ -226,6 +226,14 @@ img { max-width: 100%; }
   border-radius: 50px; padding: 3px 10px; font-size: .82rem;
 }
 
+.market-facilities { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.facility-badge {
+  background: #F1F5F9; color: var(--text-muted); border: 1px solid var(--border);
+  border-radius: 50px; padding: 3px 10px; font-size: .8rem;
+}
+.facility-badge.yes { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+.facility-badge.no { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
+
 .market-section { margin: 28px 0; }
 .market-section h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--text); border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; }
 .market-description { line-height: 1.8; color: var(--text); }
