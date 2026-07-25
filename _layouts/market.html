@@ -2,17 +2,17 @@
 layout: default
 ---
 
+<!-- 브레드크럼 -->
+<nav class="breadcrumb">
+  <a href="/">홈</a>
+  <span>›</span>
+  <a href="/region/{{ page.region_slug }}/">{{ page.region }}</a>
+  <span>›</span>
+  <span>{{ page.market_name }}</span>
+</nav>
+
 <div class="market-layout">
 <div class="market-page">
-
-  <!-- 브레드크럼 -->
-  <nav class="breadcrumb">
-    <a href="/">홈</a>
-    <span>›</span>
-    <a href="/region/{{ page.region_slug }}/">{{ page.region }}</a>
-    <span>›</span>
-    <span>{{ page.market_name }}</span>
-  </nav>
 
   <!-- 시장 헤더 -->
   <div class="market-header">
