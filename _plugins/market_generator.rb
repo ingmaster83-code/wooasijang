@@ -42,6 +42,12 @@ module Jekyll
         site.pages << RegionPage.new(site, region, slug, region_markets)
       end
 
+      by_city = markets.group_by { |m| [m['region'], m['city']] }
+      by_city.each do |(region, city), city_markets|
+        slug = REGION_SLUGS[region] || region
+        site.pages << CityPage.new(site, region, slug, city, city_markets)
+      end
+
       by_days = {}
       markets.each do |m|
         key = m['days'].sort.join('-')
@@ -131,6 +137,29 @@ module Jekyll
       days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
       self.data['title']       = "#{region} 오일장 날짜 총정리 | 5일장 전통시장 #{markets.size}곳"
       self.data['description'] = "#{region} 전통시장 #{markets.size}곳 오일장 날짜 총정리! #{days_groups} 등 매월 장날 일정과 #{cities} 특산물 정보를 지역별로 한눈에 확인하세요."
+    end
+  end
+
+  class CityPage < Page
+    def initialize(site, region, region_slug, city, markets)
+      @site = site
+      @base = site.source
+      @dir  = "region/#{region_slug}/#{city}"
+      @name = 'index.html'
+
+      self.process(@name)
+      self.read_yaml(File.join(@base, '_layouts'), 'city.html')
+      self.data['layout']      = 'city'
+      self.data['region']      = region
+      self.data['region_slug'] = region_slug
+      self.data['city']        = city
+      self.data['markets']     = markets
+      days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
+      specialties = markets.flat_map { |m| m['specialties'] || [] }.uniq.first(6).join(', ')
+      self.data['title']       = "#{city} 오일장 5일장 날짜 총정리 | #{region} 전통시장 #{markets.size}곳"
+      base_desc = "#{region} #{city} 전통시장 #{markets.size}곳 오일장 날짜 총정리! #{days_groups} 등 매월 장날 일정을 한눈에 확인하세요."
+      base_desc += " 특산물: #{specialties}." unless specialties.empty?
+      self.data['description'] = base_desc
     end
   end
 

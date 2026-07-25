@@ -7,27 +7,18 @@ layout: default
   <nav class="breadcrumb">
     <a href="/">홈</a>
     <span>›</span>
-    <span>{{ page.region }} 5일장</span>
+    <a href="/region/{{ page.region_slug }}/">{{ page.region }}</a>
+    <span>›</span>
+    <span>{{ page.city }} 5일장</span>
   </nav>
 
   <div class="list-header">
-    <h1>🗺️ {{ page.region }} 5일장</h1>
+    <h1>🏪 {{ page.region }} {{ page.city }} 5일장</h1>
     <p class="list-count">총 {{ page.markets | size }}개 전통시장</p>
   </div>
 
   <!-- 광고 -->
   <div class="ad-slot">{% include ad.html %}</div>
-
-  <div class="city-subnav">
-    <h3>🏘️ 시/군/구별로 찾기</h3>
-    <div class="region-btn-grid">
-      {% assign city_names = page.markets | map: 'city' | uniq | sort %}
-      {% for c in city_names %}
-      {% assign c_count = page.markets | where: 'city', c | size %}
-      <a href="/region/{{ page.region_slug }}/{{ c }}/" class="region-btn-sm">{{ c }} <span class="count">{{ c_count }}</span></a>
-      {% endfor %}
-    </div>
-  </div>
 
   <div class="today-highlight" id="todaySection" style="display:none">
     <h2>🎉 오늘 열리는 장</h2>
@@ -64,16 +55,18 @@ layout: default
   </div>
 
   <div class="region-nav">
-    <h3>다른 지역 5일장</h3>
+    <h3>{{ page.region }} 다른 시/군/구</h3>
     <div class="region-btn-grid">
-      {% assign all_regions = site.data.markets | map: 'region' | uniq | sort %}
-      {% for r in all_regions %}
-      {% assign r_slug = site.data.region_slugs[r] %}
-      {% if r != page.region %}
-      <a href="/region/{{ r_slug }}/" class="region-btn-sm">{{ r }}</a>
+      {% assign region_markets = site.data.markets | where: 'region', page.region %}
+      {% assign city_names = region_markets | map: 'city' | uniq | sort %}
+      {% for c in city_names %}
+      {% if c != page.city %}
+      {% assign c_count = region_markets | where: 'city', c | size %}
+      <a href="/region/{{ page.region_slug }}/{{ c }}/" class="region-btn-sm">{{ c }} <span class="count">{{ c_count }}</span></a>
       {% endif %}
       {% endfor %}
     </div>
+    <a href="/region/{{ page.region_slug }}/" class="back-to-region">← {{ page.region }} 전체 보기</a>
   </div>
 
 </div>

@@ -88,7 +88,16 @@ img { max-width: 100%; }
   border: 2px solid var(--accent); border-radius: var(--radius);
   padding: 24px; margin-bottom: 32px;
 }
-.today-section h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; }
+.today-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+.today-header h2 { font-size: 1.1rem; color: var(--primary); }
+.today-nav-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--accent);
+  background: var(--white); color: var(--primary); font-size: 1.1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.today-nav-btn:hover { background: var(--accent); color: var(--white); }
 .today-cards { display: flex; flex-wrap: wrap; gap: 10px; }
 .today-card {
   background: var(--white); border: 1px solid var(--border); border-radius: 8px;
@@ -318,8 +327,9 @@ img { max-width: 100%; }
 }
 .card-address { font-size: .78rem; color: var(--text-muted); }
 
-.region-nav, .days-nav { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px; }
-.region-nav h3, .days-nav h3 { font-size: .95rem; color: var(--text-muted); margin-bottom: 12px; }
+.region-nav, .days-nav, .city-subnav { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px; }
+.region-nav h3, .days-nav h3, .city-subnav h3 { font-size: .95rem; color: var(--text-muted); margin-bottom: 12px; }
+.city-subnav { margin-top: 0; border-top: none; margin-bottom: 24px; }
 .region-btn-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .region-btn-sm, .days-btn-sm {
   border: 1px solid var(--border); border-radius: 50px;
@@ -327,7 +337,13 @@ img { max-width: 100%; }
   text-decoration: none; transition: all .2s;
 }
 .region-btn-sm:hover, .days-btn-sm:hover { border-color: var(--primary); color: var(--primary); text-decoration: none; }
+.region-btn-sm .count { color: var(--text-muted); font-size: .78rem; margin-left: 2px; }
 .days-btn-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.back-to-region {
+  display: inline-block; margin-top: 16px; font-size: .85rem;
+  color: var(--primary); text-decoration: none; font-weight: 600;
+}
+.back-to-region:hover { text-decoration: underline; }
 
 /* ===== 푸터 ===== */
 .site-footer {

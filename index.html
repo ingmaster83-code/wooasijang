@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 전국 오일장 5일장 날짜 총정리 (2026년) | 우아시장
-description: 전국 133개 전통시장 오일장 날짜 총정리! 1·6일장, 2·7일장, 3·8일장, 4·9일장, 5·10일장까지 지역별로 한눈에 확인. 오늘 여는 장날과 특산물도 무료로 바로 확인하세요.
+description: 전국 467개 전통시장 오일장·5일장 날짜 총정리! 1·6일장부터 5·10일장까지 지역별로 한눈에 확인하고, 오늘 여는 장날도 실시간으로 바로 확인하세요. 특산물 정보까지 무료 제공.
 ---
 
 <div class="home-page">
@@ -24,7 +24,11 @@ description: 전국 133개 전통시장 오일장 날짜 총정리! 1·6일장, 
 
   <!-- 오늘/내일 장날 -->
   <div class="today-section">
-    <h2>📅 오늘 열리는 장 <span id="todayDateLabel" style="font-size:.85rem;font-weight:400;color:#92400E;"></span></h2>
+    <div class="today-header">
+      <button id="todayPrev" class="today-nav-btn" aria-label="이전 날짜">‹</button>
+      <h2>📅 <span id="todayLabelMain">오늘</span> 열리는 장 <span id="todayDateLabel" style="font-size:.85rem;font-weight:400;color:#92400E;"></span></h2>
+      <button id="todayNext" class="today-nav-btn" aria-label="다음 날짜">›</button>
+    </div>
     <div class="today-cards" id="todayCards">
       <span class="no-market">불러오는 중...</span>
     </div>
@@ -97,24 +101,24 @@ description: 전국 133개 전통시장 오일장 날짜 총정리! 1·6일장, 
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7/dist/fuse.min.js"></script>
 <script>
 (async function() {
-  // 오늘 장날 계산
+  const WEEKDAYS = ['일','월','화','수','목','금','토'];
   const now = new Date();
   const today = now.getDate();
   const month = now.getMonth() + 1;
   const daysInMonth = new Date(now.getFullYear(), month, 0).getDate();
 
-  document.getElementById('todayDateLabel').textContent =
-    `(${month}월 ${today}일)`;
+  function marketOpensOn(days, day, dim) {
+    return days.some(d => {
+      let x = d;
+      while (x <= dim) { if (x === day) return true; x += 10; }
+      return false;
+    });
+  }
 
   // 장날별 버튼 오늘 하이라이트
   document.querySelectorAll('.days-btn[data-days]').forEach(btn => {
     const days = btn.dataset.days.split('-').map(Number);
-    const isToday = days.some(d => {
-      let x = d;
-      while (x <= daysInMonth) { if (x === today) return true; x += 10; }
-      return false;
-    });
-    if (isToday) btn.classList.add('active-today');
+    if (marketOpensOn(days, today, daysInMonth)) btn.classList.add('active-today');
   });
 
   // search_index 로드
@@ -124,26 +128,44 @@ description: 전국 133개 전통시장 오일장 날짜 총정리! 1·6일장, 
     markets = await res.json();
   } catch(e) { return; }
 
-  // 오늘 열리는 장
-  const todayMarkets = markets.filter(m =>
-    m.days.some(d => {
-      let x = d;
-      while (x <= daysInMonth) { if (x === today) return true; x += 10; }
-      return false;
-    })
-  );
-
+  // 오늘/내일/날짜별 열리는 장 (좌우 화살표로 이동)
+  let dayOffset = 0;
   const todayEl = document.getElementById('todayCards');
-  if (todayMarkets.length > 0) {
-    todayEl.innerHTML = todayMarkets.map(m =>
-      `<a href="/market/${m.id}/" class="today-card">
-        ${m.name}
-        <span>${m.region} ${m.city}</span>
-      </a>`
-    ).join('');
-  } else {
-    todayEl.innerHTML = '<span class="no-market">오늘은 열리는 장이 없습니다.</span>';
+  const labelMainEl = document.getElementById('todayLabelMain');
+  const labelDateEl = document.getElementById('todayDateLabel');
+
+  function renderTodayCards(offset) {
+    dayOffset = offset;
+    const target = new Date(now);
+    target.setDate(now.getDate() + offset);
+    const tDay = target.getDate();
+    const tMonth = target.getMonth() + 1;
+    const tDim = new Date(target.getFullYear(), tMonth, 0).getDate();
+    const weekday = WEEKDAYS[target.getDay()];
+
+    if (offset === 0) labelMainEl.textContent = '오늘';
+    else if (offset === 1) labelMainEl.textContent = '내일';
+    else if (offset === -1) labelMainEl.textContent = '어제';
+    else labelMainEl.textContent = `${tMonth}월 ${tDay}일(${weekday})`;
+    labelDateEl.textContent = `(${tMonth}월 ${tDay}일 ${weekday}요일)`;
+
+    const cards = markets.filter(m => marketOpensOn(m.days, tDay, tDim));
+    if (cards.length > 0) {
+      todayEl.innerHTML = cards.map(m =>
+        `<a href="/market/${m.id}/" class="today-card">
+          ${m.name}
+          <span>${m.region} ${m.city}</span>
+        </a>`
+      ).join('');
+    } else {
+      todayEl.innerHTML = `<span class="no-market">${labelMainEl.textContent}은 열리는 장이 없습니다.</span>`;
+    }
   }
+
+  document.getElementById('todayPrev').addEventListener('click', () => renderTodayCards(dayOffset - 1));
+  document.getElementById('todayNext').addEventListener('click', () => renderTodayCards(dayOffset + 1));
+
+  renderTodayCards(0);
 
   // 검색
   const fuse = new Fuse(markets, {
