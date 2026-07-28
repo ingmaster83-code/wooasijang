@@ -11,6 +11,7 @@
   <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}우아시장 - 전국 5일장 장날 정보{% endif %}">
   <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ page.image | default: '/assets/og-image.png' | absolute_url }}">
   <meta property="og:site_name" content="우아시장">
   <meta name="twitter:card" content="summary_large_image">
 
