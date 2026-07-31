@@ -112,6 +112,7 @@ layout: default
     <div class="related-grid">
       {% for m in page.same_region %}
       <a href="/market/{{ m.id }}/" class="related-card">
+        <span class="related-icon">🏪</span>
         <span class="related-name">{{ m.name }}</span>
         <span class="related-days">매월 {{ m.days_display }}</span>
       </a>
@@ -128,6 +129,7 @@ layout: default
     <div class="related-grid">
       {% for m in page.same_days %}
       <a href="/market/{{ m.id }}/" class="related-card">
+        <span class="related-icon">📅</span>
         <span class="related-name">{{ m.name }}</span>
         <span class="related-days">{{ m.region }} {{ m.city }}</span>
       </a>

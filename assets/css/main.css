@@ -278,15 +278,30 @@ img { max-width: 100%; }
 .calendar-note { font-size: .8rem; color: var(--text-muted); margin-top: 10px; }
 
 /* 관련 시장 그리드 */
-.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .related-card {
-  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
-  padding: 10px 14px; text-decoration: none; transition: all .2s;
-  display: flex; flex-direction: column; gap: 4px;
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; text-decoration: none; transition: all .2s;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative; overflow: hidden;
 }
-.related-card:hover { border-color: var(--primary); background: var(--primary-light); text-decoration: none; }
-.related-name { font-weight: 600; color: var(--text); font-size: .9rem; }
-.related-days { font-size: .8rem; color: var(--text-muted); }
+.related-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--accent);
+}
+.related-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 20px rgba(0,0,0,.1);
+  transform: translateY(-3px);
+  text-decoration: none;
+}
+.related-icon { font-size: 1.4rem; line-height: 1; }
+.related-name { font-weight: 700; color: var(--text); font-size: 1rem; }
+.related-days {
+  align-self: flex-start; font-size: .78rem; font-weight: 600;
+  color: var(--primary); background: var(--primary-light);
+  padding: 3px 10px; border-radius: 20px;
+}
 .view-all-link { font-size: .85rem; color: var(--primary); font-weight: 600; }
 
 /* ===== 리스트 페이지 (지역/날짜) ===== */
