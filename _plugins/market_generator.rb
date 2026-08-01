@@ -33,7 +33,27 @@ module Jekyll
           .map { |m| { 'id' => m['id'], 'name' => m['name'], 'region' => m['region'], 'city' => m['city'] } }
           .first(8)
 
-        site.pages << MarketPage.new(site, market, same_region, same_days)
+        specialties = market['specialties'] || []
+        same_specialty = specialties.empty? ? [] : markets
+          .select { |m| m['id'] != market['id'] && !((m['specialties'] || []) & specialties).empty? }
+          .map { |m| { 'id' => m['id'], 'name' => m['name'], 'region' => m['region'], 'city' => m['city'], 'shared_specialty' => ((m['specialties'] || []) & specialties).first } }
+          .first(8)
+
+        # 이전/다음 시장: 같은 지역 내에서 시/군/구 → 이름 순 정렬 후 순환 탐색
+        region_ordered = markets
+          .select { |m| m['region'] == market['region'] }
+          .sort_by { |m| [m['city'].to_s, m['name'].to_s] }
+        idx = region_ordered.index { |m| m['id'] == market['id'] }
+        prev_market = nil
+        next_market = nil
+        if idx && region_ordered.size > 1
+          prev_m = region_ordered[(idx - 1) % region_ordered.size]
+          next_m = region_ordered[(idx + 1) % region_ordered.size]
+          prev_market = { 'id' => prev_m['id'], 'name' => prev_m['name'] }
+          next_market = { 'id' => next_m['id'], 'name' => next_m['name'] }
+        end
+
+        site.pages << MarketPage.new(site, market, same_region, same_days, same_specialty, prev_market, next_market)
       end
 
       by_region = markets.group_by { |m| m['region'] }
@@ -80,7 +100,7 @@ module Jekyll
   class MarketPage < Page
     REGION_SLUGS = MarketPageGenerator::REGION_SLUGS
 
-    def initialize(site, market, same_region, same_days)
+    def initialize(site, market, same_region, same_days, same_specialty, prev_market, next_market)
       @site = site
       @base = site.source
       @dir  = "market/#{market['id']}"
@@ -91,9 +111,12 @@ module Jekyll
       market_data = market.dup
       market_data['market_name'] = market_data.delete('name')
       self.data.merge!(market_data)
-      self.data['layout']        = 'market'
-      self.data['same_region']   = same_region
-      self.data['same_days']     = same_days
+      self.data['layout']         = 'market'
+      self.data['same_region']    = same_region
+      self.data['same_days']      = same_days
+      self.data['same_specialty'] = same_specialty
+      self.data['prev_market']    = prev_market
+      self.data['next_market']    = next_market
       self.data['days_key']      = market['days'].sort.join('-')
       self.data['days_display']  = days_full_label(market['days'])
       self.data['region_slug']   = REGION_SLUGS[market['region']] || market['region']
