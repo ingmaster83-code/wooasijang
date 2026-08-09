@@ -15,6 +15,17 @@ module Jekyll
       '제주도' => 'jeju', '서울' => 'seoul',
     }.freeze
 
+    # 우아동네(wooatown) 지역 페이지 slug (짧은 한글 시도명)
+    WOOATOWN_SIDO = {
+      '경기도' => '경기', '인천' => '인천', '강원도' => '강원',
+      '충청북도' => '충북', '충청남도' => '충남',
+      '전라북도' => '전북', '전라남도' => '전남',
+      '경상북도' => '경북', '경상남도' => '경남',
+      '대구' => '대구', '울산' => '울산', '부산' => '부산',
+      '광주' => '광주', '세종' => '세종', '대전' => '대전',
+      '제주도' => '제주', '서울' => '서울',
+    }.freeze
+
     def generate(site)
       markets = site.data['markets']
       return unless markets&.any?
@@ -99,6 +110,7 @@ module Jekyll
 
   class MarketPage < Page
     REGION_SLUGS = MarketPageGenerator::REGION_SLUGS
+    WOOATOWN_SIDO = MarketPageGenerator::WOOATOWN_SIDO
 
     def initialize(site, market, same_region, same_days, same_specialty, prev_market, next_market)
       @site = site
@@ -120,6 +132,7 @@ module Jekyll
       self.data['days_key']      = market['days'].sort.join('-')
       self.data['days_display']  = days_full_label(market['days'])
       self.data['region_slug']   = REGION_SLUGS[market['region']] || market['region']
+      self.data['wooatown_sido'] = WOOATOWN_SIDO[market['region']] || market['region']
       days_label = days_full_label(market['days'])
       short_days = market['days'].sort.join('·') + "일"
       specialties_str = (market['specialties'] || []).join(', ')
