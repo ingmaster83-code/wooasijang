@@ -136,7 +136,7 @@ module Jekyll
       days_label = days_full_label(market['days'])
       short_days = market['days'].sort.join('·') + "일"
       specialties_str = (market['specialties'] || []).join(', ')
-      self.data['title']         = "#{market['name']} 장날 날짜 (매월 #{short_days}) | #{market['region']} #{market['city']} 5일장"
+      self.data['title']         = "#{market['name']} 장날 날짜 매월 #{short_days}"
       base_description = market['seo_description'] ||
         "#{market['name']}(#{market['region']} #{market['city']}) 매월 #{days_label}에 열리는 전통 5일장. 특산물: #{specialties_str}."
       self.data['description']   = "#{market['name']} 장날 날짜: 매월 #{short_days}. #{base_description}"
@@ -171,7 +171,7 @@ module Jekyll
       self.data['markets']     = markets
       cities = markets.map { |m| m['city'] }.uniq.first(4).join(', ')
       days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
-      self.data['title']       = "#{region} 오일장 날짜 총정리 | 5일장 전통시장 #{markets.size}곳"
+      self.data['title']       = "#{region} 5일장 날짜 총정리 | 전통시장 #{markets.size}곳"
       self.data['description'] = "#{region} 전통시장 #{markets.size}곳 오일장 날짜 총정리! #{days_groups} 등 매월 장날 일정과 #{cities} 특산물 정보를 지역별로 한눈에 확인하세요."
     end
   end
@@ -192,7 +192,7 @@ module Jekyll
       self.data['markets']     = markets
       days_groups = markets.map { |m| m['days'].sort.join('·') + '일' }.uniq.sort.first(5).join(', ')
       specialties = markets.flat_map { |m| m['specialties'] || [] }.uniq.first(6).join(', ')
-      self.data['title']       = "#{city} 오일장 5일장 날짜 총정리 | #{region} 전통시장 #{markets.size}곳"
+      self.data['title']       = "#{city} 5일장 날짜 총정리 | #{region} 전통시장 #{markets.size}곳"
       base_desc = "#{region} #{city} 전통시장 #{markets.size}곳 오일장 날짜 총정리! #{days_groups} 등 매월 장날 일정을 한눈에 확인하세요."
       base_desc += " 특산물: #{specialties}." unless specialties.empty?
       self.data['description'] = base_desc
